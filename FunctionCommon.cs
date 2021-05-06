@@ -36,6 +36,21 @@ public static class FunctionCommon
         }
     }
 
+    public static bool Between(float val, float min, float max)
+    {
+        return val >= min && val <= max;
+    }
+
+    public static void DeleteAllChild<T>(this T target, int start = 0, int end = 0) where T : Transform
+    {
+        for (int i = target.childCount - 1 - end; i >= start; i--)
+        {
+            UnityEngine.Object.DestroyImmediate(target.GetChild(i).gameObject);
+        }
+    }
+
+    #region Sort
+
     private static System.Random rng = new System.Random();
 
     public static IList<T> Shuffle<T>(this IList<T> list)
@@ -53,6 +68,10 @@ public static class FunctionCommon
         return list;
     }
 
+    #endregion
+
+    #region Random
+
     public static int Random(int num1, int num2)
     {
         float val = Random((float) num1, num2);
@@ -63,45 +82,6 @@ public static class FunctionCommon
     public static float Random(float num1, float num2)
     {
         return UnityEngine.Random.Range(num1, num2);
-    }
-
-    public static Tweener ChangeValueFloat(float startValue, float endValue, float speed,
-        Action<float> onUpdate)
-    {
-        return DOTween.To(() => startValue, x => startValue = x, endValue, speed).OnUpdate(delegate
-        {
-            onUpdate?.Invoke(startValue);
-        });
-    }
-
-    public static Tweener ChangeValueInt(int startValue, int endValue, float speed,
-        Action<int> onUpdate)
-    {
-        return DOTween.To(() => startValue, x => startValue = x, endValue, speed).OnUpdate(delegate
-        {
-            onUpdate?.Invoke(startValue);
-        });
-    }
-
-    public static Tween DelayTime(float time, Action onDone)
-    {
-        return DOVirtual.DelayedCall(time, delegate
-        {
-            onDone();
-        });
-    }
-
-    public static bool Between(float val, float min, float max)
-    {
-        return val >= min && val <= max;
-    }
-
-    public static void DeleteAllChild<T>(this T target, int start = 0, int end = 0) where T : Transform
-    {
-        for (int i = target.childCount - 1 - end; i >= start; i--)
-        {
-            UnityEngine.Object.DestroyImmediate(target.GetChild(i).gameObject);
-        }
     }
     
     public static T LoadRandom<T>(this IList<T> list)
@@ -155,12 +135,65 @@ public static class FunctionCommon
 
         return RandomUnique(lst, take);
     }
+    
+    public static Enum GetRandomEnumValue(this Type t)
+    {
+        return Enum.GetValues(t)          // get values from Type provided
+            .OfType<Enum>()               // casts to Enum
+            .OrderBy(e => Guid.NewGuid()) // mess with order of results
+            .FirstOrDefault();            // take first item in result
+    }
+
+    #endregion
+
+    #region Dotween
+    
+    public static Tweener ChangeValueFloat(float startValue, float endValue, float speed,
+        Action<float> onUpdate)
+    {
+        return DOTween.To(() => startValue, x => startValue = x, endValue, speed).OnUpdate(delegate
+        {
+            onUpdate?.Invoke(startValue);
+        });
+    }
+
+    public static Tweener ChangeValueInt(int startValue, int endValue, float speed,
+        Action<int> onUpdate)
+    {
+        return DOTween.To(() => startValue, x => startValue = x, endValue, speed).OnUpdate(delegate
+        {
+            onUpdate?.Invoke(startValue);
+        });
+    }
+
+    public static Tween DelayTime(float time, Action onDone)
+    {
+        return DOVirtual.DelayedCall(time, delegate
+        {
+            onDone();
+        });
+    }
+
+    #endregion
+
+    #region Convert
 
     public static List<T> ConvertToList<T>(this T item)
     {
         var result = new List<T>();
         result.Add(item);
         return result;
+    }
+
+    public static string ToHexString(this Color c)
+    {
+        return $"#{ColorUtility.ToHtmlStringRGB(c)}";
+    }
+    public static Color ToColor(this string hex)
+    {
+        Color color = Color.white;
+        ColorUtility.TryParseHtmlString(hex, out color);
+        return color;
     }
     
     public static Vector2 RadianToVector2(this float radian)
@@ -173,6 +206,20 @@ public static class FunctionCommon
         return RadianToVector2(degree * Mathf.Deg2Rad);
     }
     
+    public static string ToJson(this object obj)
+    {
+        return JsonUtility.ToJson(obj);
+    }
+    
+    public static T FromJson<T>(this string json)
+    {
+        return JsonUtility.FromJson<T>(json);
+    }
+
+    #endregion
+
+    #region Look
+
     /// <summary>
     /// Make 3D gameobject x axis look at target in 2D (with object has default rotation like in 3D).
     /// </summary>
@@ -229,16 +276,24 @@ public static class FunctionCommon
         transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(forward.y, forward.x) * Mathf.Rad2Deg);
     }
 
-    public static string ToHexString(this Color c)
+    #endregion
+
+    #region Time
+
+    public static DateTime StartOfDay(this DateTime theDate)
     {
-        return $"#{ColorUtility.ToHtmlStringRGB(c)}";
+        return theDate.Date;
     }
-    public static Color ToColor(this string hex)
+    public static DateTime EndOfDay(this DateTime theDate)
     {
-        Color color = Color.white;
-        ColorUtility.TryParseHtmlString(hex, out color);
-        return color;
+        return theDate.Date.AddDays(1).AddTicks(-1);
     }
+    public static float TotalSecondsInADay()
+    {
+        return 86400;
+    }
+
+    #endregion
 }
 
 public static class LoadAssets<T> where T : Object
