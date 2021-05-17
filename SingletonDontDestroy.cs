@@ -2,22 +2,22 @@
 
 public class SingletonDontDestroy<T> : MonoBehaviour where T : SingletonDontDestroy<T>
 {
-    private static T instance;
-    public static T Instance
+    private static T i;
+    public static T I
     {
         get
         {
-            if (instance == null)
+            if (i == null)
             {
-                instance = FindObjectOfType<T>();
+                i = FindObjectOfType<T>();
             }
-            return instance;
+            return i;
         }
     }
 
     private void Awake()
     {
-        if (instance != null)
+        if (I != null)
         {
             Destroy(gameObject);
             return;

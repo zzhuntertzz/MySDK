@@ -2,16 +2,16 @@
 
 public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
-    private static T instance;
-    public static T Instance
+    private static T i;
+    public static T I
     {
         get
         {
-            if (instance == null)
+            if (i == null)
             {
-                instance = FindObjectOfType<T>();
+                i = FindObjectOfType<T>();
             }
-            return instance;
+            return i;
         }
     }
 }

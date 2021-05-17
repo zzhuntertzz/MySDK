@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Linq;
-using Object = UnityEngine.Object;
 
 public static class FunctionCommon
 {
@@ -65,6 +64,20 @@ public static class FunctionCommon
             list[n] = value;
         }
 
+        return list;
+    }
+    
+    //shuffle không lặp lại list
+    public static IList<T> ShuffleUnique<T>(this IList<T> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            T fruitCurrentIndex = list[i];
+            int randomIndex = UnityEngine.Random.Range(
+                Mathf.Min(i + 1, list.Count - 1), list.Count - 1);
+            list[i] = list[randomIndex];
+            list[randomIndex] = fruitCurrentIndex;
+        }
         return list;
     }
 
@@ -296,7 +309,7 @@ public static class FunctionCommon
     #endregion
 }
 
-public static class LoadAssets<T> where T : Object
+public static class LoadAssets<T> where T : UnityEngine.Object
 {
     public static T Load(string path)
     {

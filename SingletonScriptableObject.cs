@@ -2,16 +2,16 @@
 
 public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 {
-    private static T _instance;
-    public static T Instance
+    private static T i;
+    public static T I
     {
         get
         {
-            if (_instance == null)
+            if (i == null)
             {
-                _instance = Resources.Load<T>(typeof(T).Name);
+                i = Resources.Load<T>(typeof(T).Name);
             }
-            return _instance;
+            return i;
         }
     }
 }
